@@ -1,22 +1,16 @@
-use std::{fmt};
-
-use clap::{Parser,ValueEnum};
-use sha2::Digest;
+use std::fmt;
+use clap::{Parser, ValueEnum};
+use sha2::{Digest, Sha256, Sha512};
 
 #[derive(Parser, Debug)]
-#[command(version)]
+#[command(version, about = "计算文本的哈希摘要")]
 struct MyArgs {
-    #[arg(short, long, default_value_t=Ver::Sha256)]
+    /// Choose Hash Algorithm
+    #[arg(short='v', long="ver", default_value_t = Ver::Sha256)]
     ver: Ver,
-}
 
-#[derive(ValueEnum, Clone, Copy, Debug)]
-#[value(rename_all="kebab")]
-enum Ver {
-    #[value(alias="2")]
-    Sha256,
-    #[value(alias="5")]
-    Sha512
+    #[arg(name="source_text")]
+    data: String,
 }
 
 impl fmt::Display for Ver {
@@ -28,16 +22,23 @@ impl fmt::Display for Ver {
     }
 }
 
+#[derive(ValueEnum, Clone, Copy, Debug)]
+enum Ver {
+    Sha256,
+    Sha512,
+}
+
+fn hexify(bytes: impl AsRef<[u8]>) -> String {
+    bytes.as_ref().iter().map(|b| format!("{b:02x}")).collect()
+}
+
 fn main() {
     let args = MyArgs::parse();
-    
-    let hex256 = sha2::Sha256::digest("data");
-    let hex512 = sha2::Sha512::digest("data");
-        
-    let hash: String = match args.ver {
-        Ver::Sha256 => hex256.iter().map(|b| format!("{:02x}", b)).collect(),
-        Ver::Sha512 => hex512.into_iter().map(|b| format!("{:02x}", b)).collect(),
+
+    let hash = match args.ver {
+        Ver::Sha256 => hexify(Sha256::digest(args.data.as_bytes())),
+        Ver::Sha512 => hexify(Sha512::digest(args.data.as_bytes())),
     };
-    
+
     println!("{hash}");
 }

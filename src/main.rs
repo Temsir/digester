@@ -1,4 +1,4 @@
-use std::fmt::{self, write};
+use std::fmt::{self};
 use clap::{Parser, ValueEnum};
 use md5;
 use sha2::{Digest, Sha256, Sha512};
@@ -16,7 +16,7 @@ struct MyArgs {
     input: Option<String>,
     
     #[arg(name="source_text")]
-    text: String,
+    text: Option<String>,
 }
 
 impl fmt::Display for Ver {
@@ -31,8 +31,11 @@ impl fmt::Display for Ver {
 
 #[derive(ValueEnum, Clone, Copy, Debug)]
 enum Ver {
+    #[value(alias="m")]
     Md5,
+    #[value(alias="2")]
     Sha256,
+    #[value(alias="5")]
     Sha512,
 }
 
@@ -44,12 +47,23 @@ fn main() {
     
     let args = MyArgs::parse();
 
-    let hash = match args.ver {
-        Ver::Sha256 => hexify(Sha256::digest(args.text.as_bytes())),
-        Ver::Sha512 => hexify(Sha512::digest(args.text.as_bytes())),
-        Ver::Md5 => format!("{:02x}", md5::compute(args.text)),
+    let hash = if args.input == None {
+        match args.ver {
+            Ver::Sha256 => hexify(Sha256::digest(args.text.unwrap().as_bytes())),
+            Ver::Sha512 => hexify(Sha512::digest(args.text.unwrap().as_bytes())),
+            Ver::Md5 => format!("{:02x}", md5::compute(args.text.unwrap())),
+        }
+    } else {
+        // TODO 需要加两个测试（一个文本文件，加一个二进制文件）
+        // TODO 错误处理
+        let file = fs::read(args.input.unwrap()).expect("error: file not exist or...");
+        match args.ver {
+            Ver::Sha256 => hexify(Sha256::digest(file)),
+            Ver::Sha512 => hexify(Sha512::digest(file)),
+            Ver::Md5 => format!("{:02x}", md5::compute(file)),
+        }
     };
-
+    
     println!("{hash}");
 
 }

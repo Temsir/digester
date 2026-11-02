@@ -1,0 +1,40 @@
+// Project-local debug tasks
+//
+// For more documentation on how to configure debug tasks,
+// see: https://zed.dev/docs/debugger
+[
+  {
+    "adapter": "CodeLLDB",
+    "label": "My debug task",
+    "build": {
+      "label": "cargo test -p digest:0.1.0 --all-targets",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--",
+        "-v",
+        "sha256",
+        "-i",
+        "./assets/1.txt"
+      ],
+      "env": {
+        "RUSTC_TOOLCHAIN": "C:\\Users\\temsir\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc"
+      },
+      "cwd": "C:\\Users\\temsir\\dev\\Rust_Project\\digester",
+      "use_new_terminal": false,
+      "allow_concurrent_runs": false,
+      "reveal": "always",
+      "reveal_target": "dock",
+      "hide": "never",
+      "tags": [],
+      "shell": "system",
+      "show_summary": false,
+      "show_command": false,
+      "save": "none",
+      "hooks": []
+    },
+    "sourceLanguages": [
+      "rust"
+    ]
+  },
+]

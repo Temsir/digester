@@ -1,4 +1,4 @@
-use std::fmt::{self};
+use std::{fmt::{self}, io::ErrorKind::NotFound};
 use clap::{Parser, ValueEnum};
 use md5;
 use sha2::{Digest, Sha256, Sha512};
@@ -54,9 +54,19 @@ fn main() {
             Ver::Md5 => format!("{:02x}", md5::compute(args.text.unwrap())),
         }
     } else {
-        // TODO 需要加两个测试（一个文本文件，加一个二进制文件）
-        // TODO 错误处理
-        let file = fs::read(args.input.unwrap()).expect("error: file not exist or...");
+        let file_path = args.input.unwrap();
+        
+        let file = match fs::read(&file_path) {
+            Ok(f) => f,
+            Err(e) => {
+                match e.kind() {
+                    NotFound => eprintln!("File Not Found: \"{}\"", &file_path),
+                    _ => eprintln!("Reading File Failed: {}, Path: \"{}\"", e, &file_path)
+                }
+                std::process::exit(1)
+            }
+        };
+        
         match args.ver {
             Ver::Sha256 => hexify(Sha256::digest(file)),
             Ver::Sha512 => hexify(Sha512::digest(file)),

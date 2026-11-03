@@ -48,6 +48,12 @@ fn explicit_sha512_uses_long_flag() {
 }
 
 #[test]
+fn explicit_sha256_input_file() {
+    let out = run(&["-v", "sha256", "-i", "./assets/winrar-setup.exe"]);
+    assert!(!stdout(&out).is_empty())
+}
+
+#[test]
 fn utf8_argument_is_hashed_as_utf8_bytes() {
     let out = run(&["-v", "sha256", "中文"]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));

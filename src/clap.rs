@@ -5,8 +5,8 @@ use std::fmt;
 #[command(version, about = "计算哈希摘要")]
 pub struct MyArgs {
     /// Choose Hash Algorithm
-    #[arg(short='v', long="ver", default_value_t = Ver::Sha256)]
-    pub ver: Ver,
+    #[arg(short='a', long="algorithm", default_value_t = Algo::Sha256)]
+    pub algo: Algo,
 
     /// The a file path you want to digest
     #[arg(short = 'i', long = "input")]
@@ -17,7 +17,7 @@ pub struct MyArgs {
 }
 
 #[derive(ValueEnum, Clone, Copy, Debug)]
-pub enum Ver {
+pub enum Algo {
     #[value(alias = "m")]
     Md5,
     #[value(alias = "2")]
@@ -28,13 +28,13 @@ pub enum Ver {
     Sha1
 }
 
-impl fmt::Display for Ver {
+impl fmt::Display for Algo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Ver::Md5 => write!(f, "md5"),
-            Ver::Sha256 => write!(f, "sha256"),
-            Ver::Sha512 => write!(f, "sha512"),
-            Ver::Sha1 => write!(f, "sha1"),
+            Algo::Md5 => write!(f, "md5"),
+            Algo::Sha256 => write!(f, "sha256"),
+            Algo::Sha512 => write!(f, "sha512"),
+            Algo::Sha1 => write!(f, "sha1"),
         }
     }
 }

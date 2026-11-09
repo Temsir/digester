@@ -38,41 +38,41 @@ fn implicit_sha256_text() {
 
 #[test]
 fn short_flag_md5_text() {
-    let out = run(&["-v", "md5", HELLO_WORLD]);
+    let out = run(&["-a", "md5", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), MD5_HELLO_WORLD);
 }
 
 #[test]
 fn short_flag_sha256_text() {
-    let out = run(&["-v", "sha256", HELLO_WORLD]);
+    let out = run(&["-a", "sha256", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA256_HELLO_WORLD);
 }
 
 #[test]
 fn long_flag_sha512_text() {
-    let out = run(&["--ver", "sha512", HELLO_WORLD]);
+    let out = run(&["--algorithm", "sha512", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA512_HELLO_WORLD);
 }
 
 #[test]
 fn long_flag_sha1_text() {
-    let out = run(&["--ver", "sha1", HELLO_WORLD]);
+    let out = run(&["--algorithm", "sha1", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA1_HELLO_WORLD);
 }
 
 #[test]
 fn short_flag_sha256_file() {
-    let out = run(&["-v", "sha256", "-i", "./assets/winrar-setup.exe"]);
+    let out = run(&["-a", "sha256", "-i", "./assets/winrar-setup.exe"]);
     assert!(!stdout(&out).is_empty())
 }
 
 #[test]
 fn utf8_text() {
-    let out = run(&["-v", "sha256", "中文"]);
+    let out = run(&["-a", "sha256", "中文"]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(
         stdout(&out),
@@ -82,7 +82,7 @@ fn utf8_text() {
 
 #[test]
 fn empty_string_text() {
-    let out = run(&["-v", "sha256", ""]);
+    let out = run(&["-a", "sha256", ""]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA256_EMPTY);
 }

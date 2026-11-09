@@ -6,7 +6,10 @@ const HELLO_WORLD: &str = "hello world";
 const MD5_HELLO_WORLD: &str = "5eb63bbbe01eeed093cb22bb8f5acdc3";
 const SHA512_HELLO_WORLD: &str = "309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f";
 const SHA256_HELLO_WORLD: &str = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";
+const SHA1_HELLO_WORLD: &str = "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed";
 const SHA256_EMPTY: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
+
 
 fn run(args: &[&str]) -> Output {
     Command::new(BIN)
@@ -27,34 +30,48 @@ fn stderr(out: &Output) -> String {
 }
 
 #[test]
-fn explicit_md5() {
+fn implicit_sha256_text() {
+    let out = run(&[HELLO_WORLD]);
+    assert!(out.status.success(), "stderr: {}", stderr(&out));
+    assert_eq!(stdout(&out), SHA256_HELLO_WORLD);
+}
+
+#[test]
+fn short_flag_md5_text() {
     let out = run(&["-v", "md5", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), MD5_HELLO_WORLD);
 }
 
 #[test]
-fn explicit_sha256() {
+fn short_flag_sha256_text() {
     let out = run(&["-v", "sha256", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA256_HELLO_WORLD);
 }
 
 #[test]
-fn explicit_sha512_uses_long_flag() {
+fn long_flag_sha512_text() {
     let out = run(&["--ver", "sha512", HELLO_WORLD]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA512_HELLO_WORLD);
 }
 
 #[test]
-fn explicit_sha256_input_file() {
+fn long_flag_sha1_text() {
+    let out = run(&["--ver", "sha1", HELLO_WORLD]);
+    assert!(out.status.success(), "stderr: {}", stderr(&out));
+    assert_eq!(stdout(&out), SHA1_HELLO_WORLD);
+}
+
+#[test]
+fn short_flag_sha256_file() {
     let out = run(&["-v", "sha256", "-i", "./assets/winrar-setup.exe"]);
     assert!(!stdout(&out).is_empty())
 }
 
 #[test]
-fn utf8_argument_is_hashed_as_utf8_bytes() {
+fn utf8_text() {
     let out = run(&["-v", "sha256", "中文"]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(
@@ -64,7 +81,7 @@ fn utf8_argument_is_hashed_as_utf8_bytes() {
 }
 
 #[test]
-fn empty_string_is_valid_input() {
+fn empty_string_text() {
     let out = run(&["-v", "sha256", ""]);
     assert!(out.status.success(), "stderr: {}", stderr(&out));
     assert_eq!(stdout(&out), SHA256_EMPTY);

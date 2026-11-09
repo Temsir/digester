@@ -24,6 +24,8 @@ pub enum Ver {
     Sha256,
     #[value(alias = "5")]
     Sha512,
+    #[value(alias = "1")]
+    Sha1
 }
 
 impl fmt::Display for Ver {
@@ -32,6 +34,7 @@ impl fmt::Display for Ver {
             Ver::Md5 => write!(f, "md5"),
             Ver::Sha256 => write!(f, "sha256"),
             Ver::Sha512 => write!(f, "sha512"),
+            Ver::Sha1 => write!(f, "sha1"),
         }
     }
 }

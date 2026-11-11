@@ -36,8 +36,6 @@ pub fn digest_file(file_path: &str, algo: Algo) -> String {
         Algo::Sha1 => Hasher::Sha1(sha1::Sha1::new()),
     };
 
-    println!("Digesting file. May take a while...");
-
     loop {
         let n = handle.read(&mut buf).expect("fail to read");
 

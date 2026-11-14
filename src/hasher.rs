@@ -1,9 +1,8 @@
 use crate::clap::Algo;
-use sha2::{Digest, Sha256, Sha512};
 use sha1::Sha1;
+use sha2::{Digest, Sha256, Sha512};
 use std::fs::File;
-use std::io::ErrorKind::NotFound;
-use std::io::Read;
+use std::io::{Error, Read};
 
 enum Hasher {
     Md5(md5::Context),
@@ -12,21 +11,19 @@ enum Hasher {
     Sha1(sha1::Sha1),
 }
 
+/// Turn a [u8] array into String
 pub fn hexify(bytes: &[u8]) -> String {
     bytes.as_ref().iter().map(|b| format!("{b:02x}")).collect()
 }
 
-pub fn digest_file(file_path: &str, algo: Algo) -> String {
+/// Err scenaria
+/// 1. Try to the open file (get its read handle)
+/// 2. Try to keep reading it.
+pub fn digest_file(file_path: &str, algo: Algo) -> Result<String, Error> {
     let mut buf = vec![0u8; 16 * 1024];
     let mut handle = match File::open(&file_path) {
         Ok(f) => f,
-        Err(e) => {
-            match e.kind() {
-                NotFound => eprintln!("File Not Found: \"{}\"", &file_path),
-                _ => eprintln!("Unable to open file \"{}\", due to: {}", &file_path, e),
-            }
-            std::process::exit(1)
-        }
+        Err(e) => return Err(e),
     };
 
     let mut hasher = match algo {
@@ -37,7 +34,11 @@ pub fn digest_file(file_path: &str, algo: Algo) -> String {
     };
 
     loop {
-        let n = handle.read(&mut buf).expect("fail to read");
+        // n: how many bytes were read
+        let n = match handle.read(&mut buf) {
+            Ok(n) => n,
+            Err(e) => return Err(e),
+        };
 
         if n == 0 {
             break;
@@ -51,12 +52,14 @@ pub fn digest_file(file_path: &str, algo: Algo) -> String {
         }
     }
 
-    match hasher {
+    let result_string = match hasher {
         Hasher::Sha256(h) => hexify(&h.finalize()),
         Hasher::Sha512(h) => hexify(&h.finalize()),
         Hasher::Md5(ctx) => hexify(&ctx.finalize().0),
         Hasher::Sha1(h) => hexify(&h.finalize()),
-    }
+    };
+
+    Ok(result_string)
 }
 
 pub fn digest_text(source_text: &str, algo: Algo) -> String {

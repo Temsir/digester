@@ -2,3 +2,5 @@
 
 # This folder is for test purpose. Dont want to stage a 3 MiB binary file lol
 /assets/winrar-setup.exe
+
+.zed/tasks.json

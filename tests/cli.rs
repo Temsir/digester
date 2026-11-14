@@ -66,7 +66,7 @@ fn long_flag_sha1_text() {
 
 #[test]
 fn short_flag_sha256_file() {
-    let out = run(&["-a", "sha256", "-i", "./assets/winrar-setup.exe"]);
+    let out = run(&["-a", "sha256", "-f", "./assets/winrar-setup.exe"]);
     assert!(!stdout(&out).is_empty())
 }
 

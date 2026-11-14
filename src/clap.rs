@@ -1,16 +1,16 @@
-use clap::{Parser, ValueEnum};
+use clap::{CommandFactory, Parser, ValueEnum};
 use std::fmt;
 
 #[derive(Parser, Debug)]
-#[command(version, about = "计算哈希摘要")]
+#[command(version, about = "A Program to calculate hash")]
 pub struct MyArgs {
     /// Choose Hash Algorithm
     #[arg(short='a', long="algorithm", default_value_t = Algo::Sha256)]
     pub algo: Algo,
 
     /// The a file path you want to digest
-    #[arg(short = 'i', long = "input")]
-    pub input: Option<String>,
+    #[arg(short = 'f', long = "file")]
+    pub file_path: Option<String>,
 
     #[arg(name = "source_text")]
     pub text: Option<String>,
@@ -38,3 +38,9 @@ impl fmt::Display for Algo {
         }
     }
 }
+
+pub fn print_help() {
+    MyArgs::command().print_help().unwrap();
+}
+
+
